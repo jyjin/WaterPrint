@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>测试水印绘制</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .wrap {
+      text-align: center;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <canvas id='canvas'></canvas>
+  </div>
+  <div class="wrap">
+    <img id='img' />
+  </div>
+  <script>
+    const fontSize = 100;
+    const text = '阿打发点'
+    const tick = 0.3
+    const rotate = -15
+    const color = 'red'
+
+    function getCtx(id) {
+      const canvas = document.getElementById(id);
+      canvas.setAttribute('style', 'background:blue')
+      const ctx = canvas.getContext('2d');
+      return ctx
+    }
+
+    // 测量字体宽度
+    const c0 = getCtx('canvas')
+    c0.font = fontSize + "px serif";
+    const mea = c0.measureText(text)
+    const width = mea.width
+    const height = width * (0 - Math.tan(Math.PI / 180 * rotate)) + fontSize * (1 + Math.tan(Math.PI / 180 * rotate));
+    c0.fillText(text, 0, fontSize);
+
+    // 根据字体宽度重新resize画布
+    const canvas = document.getElementById('canvas');
+    canvas.setAttribute('width', width)
+    canvas.setAttribute('height', height)
+
+    // 重绘字体是的居中
+    const c1 = getCtx('canvas')
+    c1.font = fontSize + "px serif";
+    const deviation = fontSize * tick; // 我实验出来的 设置字体 与 实际字体，字体高度的误差 
+    // c1.translate(deviation / 4, width - 4 * deviation)
+    c1.translate(deviation / 4, height - fontSize)
+    c1.rotate(Math.PI / 180 * rotate);
+    c1.fillStyle = color
+    c1.fillText(text, 0, fontSize);
+
+    // 测试获取的图片
+    const base64Url = canvas.toDataURL();
+    document.getElementById('img').setAttribute('src', base64Url)
+  </script>
+</body>
+
+</html>

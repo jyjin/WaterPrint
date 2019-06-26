@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>测试水印绘制</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .wrap {
+      text-align: center;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    旋转角度<input id='rotate' value=0 />
+    <button id='add'>+1</button>
+    <button id='sub'>-1</button>
+  </div>
+  <div class="wrap">
+    <canvas id='canvas'></canvas>
+  </div>
+  <div class="wrap">
+    <img id='img' />
+  </div>
+  <script>
+    document.getElementById('add').addEventListener('click', function () {
+      document.getElementById('rotate').value = document.getElementById('rotate').value * 1 + 1
+      drawRect(document.getElementById('rotate').value)
+    })
+
+    document.getElementById('sub').addEventListener('click', function () {
+      document.getElementById('rotate').value = document.getElementById('rotate').value * 1 - 1
+      drawRect(document.getElementById('rotate').value)
+    })
+
+    document.getElementById('rotate').addEventListener('input', function (e) {
+      drawRect(e.target.value)
+    }, false)
+
+
+    var i = 0
+    setInterval(() => {
+      i += 1
+      drawRect(i)
+      document.getElementById('rotate').value = i
+    }, 10)
+
+    function drawRect(rotate) {
+
+      rotate = 0 - (Math.abs(rotate % 360))
+
+      function getCtx(id) {
+        const canvas = document.getElementById(id);
+        canvas.setAttribute('style', 'background:blue')
+        const ctx = canvas.getContext('2d');
+        return ctx
+      }
+
+      const deg = Math.PI / 180
+
+      const width = 100
+      const height = 20
+
+      // 测量字体宽度
+      const c0 = getCtx('canvas')
+
+
+      const el = document.getElementById('canvas')
+      const c1 = el.getContext('2d')
+
+      if (0 >= rotate && rotate > -90) {
+        el.setAttribute('width', width * Math.cos(Math.abs(rotate) * deg) + height * Math.sin(Math.abs(rotate) * deg))
+        el.setAttribute('height', width * Math.sin(Math.abs(rotate) * deg) + height * Math.cos(Math.abs(rotate) * deg))
+        c1.translate(0, width * Math.sin(Math.abs(rotate) * deg) + height * Math.cos(Math.abs(rotate) * deg) - height *
+          Math
+          .cos(Math.abs(rotate) * deg))
+      } else if (-90 >= rotate && rotate > -180) {
+        el.setAttribute('width', width * Math.cos(Math.abs(180 + rotate) * deg) + height * Math.sin(Math.abs(180 +
+          rotate) * deg))
+
+        el.setAttribute('height', width * Math.sin(Math.abs(180 + rotate) * deg) + height * Math.cos(Math.abs(180 +
+          rotate) * deg))
+        c1.translate(width * Math.cos(Math.abs(180 + rotate) * deg), width * Math.sin(Math.abs(180 + rotate) * deg) +
+          height *
+          Math
+          .cos(Math.abs(180 + rotate) * deg))
+      } else if (-180 >= rotate && rotate > -270) {
+        el.setAttribute('width', width * Math.cos(Math.abs(rotate + 180) * deg) + height * Math.sin(Math.abs(
+          rotate + 180) * deg))
+
+        el.setAttribute('height', width * Math.sin(Math.abs(rotate + 180) * deg) + height * Math.cos(Math.abs(
+          rotate + 180) * deg))
+        c1.translate(width * Math.cos(Math.abs(rotate + 180) * deg) + height * Math.sin(Math.abs(
+            rotate + 180) * deg),
+          height *
+          Math
+          .cos(Math.abs(rotate + 180) * deg))
+      } else {
+        el.setAttribute('width', height * Math.sin(Math.abs(rotate + 360) * deg) + width * Math.cos(Math.abs(rotate +
+          360) * deg))
+        el.setAttribute('height', height * Math.cos(Math.abs(rotate + 360) * deg) + width * Math.sin(Math.abs(rotate +
+          360) * deg))
+        c1.translate(height * Math.sin(Math.abs(rotate + 360) * deg), 0)
+      }
+      c1.rotate(rotate * deg)
+
+      c1.fillStyle = 'orange'
+      c1.fillRect(0, 0, width, height);
+
+      // 测试获取的图片
+      const base64Url = canvas.toDataURL();
+      document.getElementById('img').setAttribute('src', base64Url)
+    }
+  </script>
+</body>
+
+</html>

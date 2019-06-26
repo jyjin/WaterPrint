@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>测试水印绘制</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .wrap {
+      text-align: center;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+    // document.getElementById('div').addEventListener('input', function (e) {
+    //   drawWaterPrint(document.getElementById('rotate').value)
+    // }, false)
+  </script>
+  <div id="div">
+    <img id='img' src="https://ss3.baidu.com/-rVXeDTa2gU2pMbgoY3K/it/u=2776634547,1604806594&fm=202" onload="alert(document.getElementById('div1'));"/>
+    <div class="div1">
+      <img id='img1' src="https://img.ivsky.com/img/tupian/li/201811/13/taiguo_haitan-004.jpg" />
+    </div>
+  </div>
+  <script>
+
+    var loadImage = ()=>{
+      alert('onload')
+    }
+  </script>
+</body>
+
+</html>

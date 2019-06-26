@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>测试水印绘制</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .wrap {
+      text-align: center;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    水印字<input id='text' value='你好世界-ABcd-Helloworld' />
+    字体<input id='fontSize' type='number' value=30 />px
+    <input id='fontFamily' value='serif' />
+    颜色<input id='color' value='orange' />
+  </div>
+  <div class="wrap">
+    水平间隙<input id='left' type='number' value=0 />
+    垂直间隙<input id='top' type='number' value=0 />
+    旋转角度<input id='rotate' type='number' value=0 />
+  </div>
+  <div class="wrap">
+    <canvas id='canvas'></canvas>
+  </div>
+  <div class="wrap">
+    <img id='img' />
+  </div>
+  <script>
+    document.getElementById('text').addEventListener('input', function (e) {
+      drawWaterPrint(document.getElementById('rotate').value)
+    }, false)
+
+    document.getElementById('color').addEventListener('input', function (e) {
+      drawWaterPrint(document.getElementById('rotate').value)
+    }, false)
+
+    document.getElementById('rotate').addEventListener('input', function (e) {
+      drawWaterPrint(e.target.value)
+    }, false)
+
+    document.getElementById('top').addEventListener('input', function (e) {
+      drawWaterPrint(document.getElementById('rotate').value)
+    }, false)
+
+    document.getElementById('left').addEventListener('input', function (e) {
+      drawWaterPrint(document.getElementById('rotate').value)
+    }, false)
+
+    function getCtx(id) {
+      const canvas = document.getElementById(id);
+      canvas.setAttribute('style', 'background:blue')
+      const ctx = canvas.getContext('2d');
+      return ctx
+    }
+
+    // 测量字体宽度
+    function getTextProperty(text, font, color) {
+      const c0 = getCtx('canvas')
+      c0.font = font
+      c0.fillStyle = color
+      const height = c0.measureText('M').width + 0.08 * parseInt(font);
+      const width = c0.measureText(text).width
+      return {
+        width,
+        height
+      }
+    }
+
+    var i = 0
+    setInterval(() => {
+      i += 1
+      drawWaterPrint(i)
+      document.getElementById('rotate').value = i
+    }, 10)
+
+    function drawWaterPrint(rotate) {
+
+      rotate = (Math.abs(rotate % 360))
+
+
+      const font = document.getElementById('fontSize').value + 'px ' + document.getElementById('fontFamily').value
+      const text = document.getElementById('text').value
+      const color = document.getElementById('color').value
+      const top = document.getElementById('top').value
+      const left = document.getElementById('left').value
+      console.log([font, text, color].join('=='))
+      let {
+        width,
+        height
+      } = getTextProperty(text, font, color)
+      width += (left * 2)
+      height += (top * 2)
+
+      console.log([width, height].join('=='))
+
+      const deg = Math.PI / 180
+
+      // const width = 100
+      // const height = 20
+
+
+
+      // 测量字体宽度
+      const c0 = getCtx('canvas')
+
+
+      const el = document.getElementById('canvas')
+      const c1 = el.getContext('2d')
+
+      if (360 > rotate && rotate >= 270) {
+        el.setAttribute('width', width * Math.cos(Math.abs(360 - rotate) * deg) + height * Math.sin(Math.abs(360 -
+          rotate) * deg))
+        el.setAttribute('height', width * Math.sin(Math.abs(360 - rotate) * deg) + height * Math.cos(Math.abs(360 -
+          rotate) * deg))
+        c1.translate(0, width * Math.sin(Math.abs(360 - rotate) * deg) + height * Math.cos(Math.abs(360 - rotate) *
+            deg) -
+          height *
+          Math
+          .cos(Math.abs(360 - rotate) * deg))
+      } else if (270 > rotate && rotate >= 180) {
+        el.setAttribute('width', width * Math.cos(Math.abs(180 + rotate) * deg) + height * Math.sin(Math.abs(180 +
+          rotate) * deg))
+
+        el.setAttribute('height', width * Math.sin(Math.abs(180 + rotate) * deg) + height * Math.cos(Math.abs(180 +
+          rotate) * deg))
+        c1.translate(0 + width * Math.cos(Math.abs(180 + rotate) * deg), width * Math.sin(Math.abs(180 + rotate) *
+            deg) +
+          height *
+          Math
+          .cos(Math.abs(180 + rotate) * deg))
+      } else if (180 > rotate && rotate >= 90) {
+        el.setAttribute('width', width * Math.cos(Math.abs(180 - rotate) * deg) + height * Math.sin(Math.abs(
+          180 - rotate) * deg))
+
+        el.setAttribute('height', width * Math.sin(Math.abs(180 - rotate) * deg) + height * Math.cos(Math.abs(
+          180 - rotate) * deg))
+        c1.translate(0 + width * Math.cos(Math.abs(180 - rotate) * deg) + height * Math.sin(Math.abs(
+            180 - rotate) * deg),
+          height *
+          Math
+          .cos(Math.abs(180 - rotate) * deg))
+      } else if (90 > rotate && rotate >= 0) {
+        el.setAttribute('width', height * Math.sin(Math.abs(rotate) * deg) + width * Math.cos(Math.abs(rotate +
+          360) * deg))
+        el.setAttribute('height', height * Math.cos(Math.abs(rotate) * deg) + width * Math.sin(Math.abs(rotate +
+          360) * deg))
+        c1.translate(height * Math.sin(Math.abs(rotate) * deg), 0)
+      }
+      c1.rotate(rotate * deg)
+
+      // c1.fillStyle = 'orange'
+      // c1.fillRect(0, 0, width, height);
+
+      c1.font = font
+      c1.fillStyle = color
+      c1.fillText(text, 0, height * 0.82);
+
+      // 测试获取的图片
+      const base64Url = canvas.toDataURL();
+      document.getElementById('img').setAttribute('src', base64Url)
+    }
+    drawWaterPrint(document.getElementById('rotate').value)
+  </script>
+</body>
+
+</html>
